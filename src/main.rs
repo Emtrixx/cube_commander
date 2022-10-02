@@ -1,4 +1,4 @@
-use wgpulearn5::run;
+use wgpulearn5::render::run;
 fn main() {
     pollster::block_on(run());
 }
