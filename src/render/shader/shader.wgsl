@@ -48,12 +48,18 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     let object_color: vec4<f32> = vec4(in.color, 1.0);
 
-    let ambient_strength = 0.01;
+    // Ambient Light
+    let ambient_strength = 0.05;
     let ambient_color = light.color * ambient_strength;
 
+    // Diffuse Positional Light
     let light_dir = normalize(light.position - in.world_position);
     let diffuse_strength = max(dot(in.normal, light_dir), 0.0);
     let diffuse_color = light.color * diffuse_strength;
+    // Diffuse Directional Light
+    // let light_dir: vec3<f32> = normalize(vec3(2.0, 3.0, 0.0));
+    // let diffuse_strength = max(dot(in.normal, light_dir), 0.0);
+    // let diffuse_color = light.color * diffuse_strength;
 
     let result = object_color.xyz * (ambient_color + diffuse_color);
 

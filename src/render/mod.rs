@@ -7,21 +7,23 @@ use winit::{
     window::Window,
 };
 use vertex_types::*;
-use crate::render::model::{DrawLight, DrawGeometry};
+use crate::{render::model::{DrawLight, DrawGeometry}, game::shapes::Shape};
+
+use self::model::Mesh;
 
 mod camera;
 mod lights;
-mod model;
-mod primitives;
-mod texture;
-mod vertex_types;
+pub mod model;
+pub mod primitives;
+pub mod texture;
+pub mod vertex_types;
 
-struct State {
+pub struct State {
     surface: wgpu::Surface,
-    device: wgpu::Device,
+    pub device: wgpu::Device,
     queue: wgpu::Queue,
     config: wgpu::SurfaceConfiguration,
-    size: winit::dpi::PhysicalSize<u32>,
+    pub size: winit::dpi::PhysicalSize<u32>,
     clear_color: wgpu::Color,
     render_pipeline: wgpu::RenderPipeline,
     camera: camera::Camera,
@@ -30,8 +32,11 @@ struct State {
     camera_bind_group: wgpu::BindGroup,
     camera_controller: camera::CameraController,
     depth_texture: texture::Texture,
+    mesh: Mesh,
     cube: Cube,
-    plane: Plane,
+    // plane: Plane,
+    // vertex_buffer: wgpu::Buffer,
+    // index_buffer: wgpu::Buffer,
     light_uniform: lights::LightUniform,
     light_buffer: wgpu::Buffer,
     light_bind_group: wgpu::BindGroup,
@@ -40,7 +45,7 @@ struct State {
 
 impl State {
     // Creating some of the wgpu types requires async code
-    async fn new(window: &Window) -> Self {
+    pub async fn new(window: &Window) -> Self {
         // SETUP
         let size = window.inner_size();
 
@@ -132,7 +137,8 @@ impl State {
 
         // VERTEX DATA
         let cube = primitives::Cube::new("default_cube".to_string(), [1.0, 0., 0.], &device);
-        let plane = primitives::Plane::new("ground".to_string(), &device, [0.0, 1.0, 0.0], 50.0, [0.2, 0.4, 0.2]);
+        let cube2 = primitives::Cube::new("default_cube2".to_string(), [1.0, 0., 0.], &device);
+        // let plane = primitives::Plane::new("ground".to_string(), &device, [0.0, 1.0, 0.0], 50.0, [0.2, 0.4, 0.2]);
 
         // LIGHTS
         let light_uniform = lights::LightUniform {
@@ -180,7 +186,7 @@ impl State {
             });
             let shader = wgpu::ShaderModuleDescriptor {
                 label: Some("Light Shader"),
-                source: wgpu::ShaderSource::Wgsl(include_str!("light.wgsl").into()),
+                source: wgpu::ShaderSource::Wgsl(include_str!("shader/light.wgsl").into()),
             };
             create_render_pipeline(
                 &device,
@@ -204,7 +210,7 @@ impl State {
         let render_pipeline = {
             let shader = wgpu::ShaderModuleDescriptor {
                 label: Some("Shader"),
-                source: wgpu::ShaderSource::Wgsl(include_str!("shader.wgsl").into()),
+                source: wgpu::ShaderSource::Wgsl(include_str!("shader/shader.wgsl").into()),
             };
             create_render_pipeline(
                 &device,
@@ -236,7 +242,10 @@ impl State {
             camera_controller,
             depth_texture,
             cube,
-            plane,
+            // plane,
+            mesh: cube2.mesh,
+            // vertex_buffer: cube.mesh.vertex_buffer,
+            // index_buffer: cube.mesh.index_buffer,
             light_uniform,
             light_buffer,
             light_bind_group,
@@ -244,7 +253,7 @@ impl State {
         }
     }
 
-    fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) {
+    pub fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) {
         if new_size.width > 0 && new_size.height > 0 {
             self.size = new_size;
             self.config.width = new_size.width;
@@ -255,9 +264,8 @@ impl State {
         }
     }
 
-    fn input(&mut self, event: &WindowEvent) -> bool {
-        let mut bool = false;
-        bool = self.camera_controller.process_events(event);
+    pub fn input(&mut self, event: &WindowEvent) -> bool {
+        let bool = self.camera_controller.process_events(event);
         match event {
             &WindowEvent::CursorMoved { position, .. } => {
                 self.clear_color = wgpu::Color {
@@ -272,7 +280,7 @@ impl State {
         bool
     }
 
-    fn update(&mut self) {
+    pub fn update(&mut self) {
         self.camera_controller.update_camera(&mut self.camera);
         self.camera_uniform.update_view_proj(&self.camera);
         self.queue.write_buffer(
@@ -293,7 +301,7 @@ impl State {
         );
     }
 
-    fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
+    pub fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
         let output = self.surface.get_current_texture()?;
         let view = output
             .texture
@@ -328,8 +336,10 @@ impl State {
             render_pass.draw_light_mesh(&self.cube.mesh, &self.camera_bind_group, &self.light_bind_group);
 
             render_pass.set_pipeline(&self.render_pipeline);
-            render_pass.draw_mesh(&self.cube.mesh, &self.camera_bind_group, &self.light_bind_group);
-            render_pass.draw_mesh(&self.plane.mesh, &self.camera_bind_group, &self.light_bind_group);
+            // render_pass.draw_mesh(&self.cube.mesh, &self.camera_bind_group, &self.light_bind_group);
+            // render_pass.draw_mesh(&self.plane.mesh, &self.camera_bind_group, &self.light_bind_group);
+            
+            render_pass.draw_mesh(&self.mesh, &self.camera_bind_group, &self.light_bind_group);
         }
 
         self.queue.submit(std::iter::once(encoder.finish()));
@@ -337,78 +347,40 @@ impl State {
 
         Ok(())
     }
-}
 
-pub async fn run() {
-    // Window setup...
+    pub fn set_mesh_buffer(&mut self, meshes: Vec<Shape>) {
+        let mut vertices: Vec<DefaultVertex> = Vec::new();
+        let mut indices: Vec<u32> = Vec::new();
+        let mut num_elements: u32 = 0;
 
-    let event_loop = EventLoop::new();
-    let window = Window::new(&event_loop).unwrap();
-    let mut state = State::new(&window).await;
-
-    event_loop.run(move |event, _, control_flow| {
-        match event {
-            Event::WindowEvent {
-                ref event,
-                window_id,
-            } if window_id == window.id() => {
-                if !state.input(event) {
-                    // UPDATED!
-                    match event {
-                        WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
-                        WindowEvent::KeyboardInput {
-                            input:
-                                KeyboardInput {
-                                    virtual_keycode: Some(keycode),
-                                    ..
-                                },
-                            ..
-                        } => match keycode {
-                            VirtualKeyCode::Escape => {
-                                *control_flow = ControlFlow::Exit;
-                            }
-                            VirtualKeyCode::F => {
-                                window.set_cursor_visible(false);
-                                window
-                                    .set_cursor_grab(true)
-                                    .expect("could not grab mouse cursor");
-                            }
-                            _ => {}
-                        },
-                        WindowEvent::Resized(physical_size) => {
-                            state.resize(*physical_size);
-                        }
-                        WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
-                            state.resize(**new_inner_size);
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            Event::RedrawRequested(window_id) if window_id == window.id() => {
-                state.update();
-                match state.render() {
-                    Ok(_) => {}
-                    // Reconfigure the surface if lost
-                    Err(wgpu::SurfaceError::Lost) => state.resize(state.size),
-                    // The system is out of memory, we should probably quit
-                    Err(wgpu::SurfaceError::OutOfMemory) => *control_flow = ControlFlow::Exit,
-                    // All other errors (Outdated, Timeout) should be resolved by the next frame
-                    Err(e) => eprintln!("{:?}", e),
-                }
-            }
-            Event::MainEventsCleared => {
-                // RedrawRequested will only trigger once, unless we manually
-                // request it.
-                window.request_redraw();
-            }
-            _ => {}
+        let mut indices_len = 0;
+        for (_, mesh) in meshes.iter().enumerate() {
+            vertices.extend(mesh.vertices.clone());
+            indices.extend(mesh.indices.clone().iter().map(|f| f + indices_len));
+            indices_len += mesh.vertices.len() as u32;
+            num_elements += mesh.num_elements;
         }
-        // TODO find right place
-        window
-            .set_cursor_position(winit::dpi::LogicalPosition::new(50., 50.))
-            .unwrap();
-    });
+
+        let vertex_buffer = self.device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some("Vertex Buffer"),
+            contents: bytemuck::cast_slice(&vertices),
+            usage: wgpu::BufferUsages::VERTEX,
+        });
+        let index_buffer = self.device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some("Index Buffer"),
+            contents: bytemuck::cast_slice(&indices),
+            usage: wgpu::BufferUsages::INDEX,
+        });
+
+        let mesh = Mesh {
+            name: "Default".to_string(),
+            vertex_buffer,
+            index_buffer,
+            num_elements
+        };
+        
+        self.mesh = mesh;
+    }
 }
 
 fn create_render_pipeline(

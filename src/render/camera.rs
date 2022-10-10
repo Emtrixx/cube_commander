@@ -23,7 +23,6 @@ pub struct CameraUniform {
 
 impl CameraUniform {
     pub fn new() -> Self {
-        use cgmath::SquareMatrix;
         Self {
             view_proj: cgmath::Matrix4::identity().into(),
         }
@@ -132,7 +131,6 @@ impl CameraController {
                 // self.last_mouse_position_y = position.y;
                 true
             }
-            _ => false,
             _ => false,
         }
     }

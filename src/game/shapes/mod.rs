@@ -1,32 +1,17 @@
-use crate::render::model;
-use crate::render::vertex_types::DefaultVertex;
-use cgmath::InnerSpace;
-use cgmath::Vector3;
+use cgmath::{Vector3,InnerSpace};
 use wgpu::Device;
-use wgpu::util::DeviceExt;
 
-// const RED: [f32; 3] = [1., 0.0, 0.0];
-// const GREEN: [f32; 3] = [0., 1.0, 0.0];
-// const BLUE: [f32; 3] = [0., 0.0, 1.0];
-// const YELLOW: [f32; 3] = [1., 1.0, 1.0];
-// const MAGENTA: [f32; 3] = [1., 0.0, 1.0];
-// const CYAN: [f32; 3] = [0., 1.0, 1.0];
-const GREY: [f32; 3] = [0.3, 0.3, 0.3];
+use crate::{render::{primitives::Quad, vertex_types::DefaultVertex}, utils::colors::GREY};
 
-#[repr(C)]
-#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
-pub struct Quad {
-    pub vertices: [DefaultVertex; 4],
-    pub indices: [u32; 6],
+#[derive(Clone)]
+pub struct Shape {
+    pub num_elements: u32,
+    pub vertices: Vec<DefaultVertex>,
+    pub indices: Vec<u32>,
 }
 
-pub struct Cube {
-    pub quads: [Quad; 6],
-    pub mesh: model::Mesh,
-}
-
-impl Cube {
-    pub fn new(name: String, color: [f32; 3], device: &wgpu::Device) -> Self {
+impl Shape {
+    pub fn new(name: String, color: [f32; 3]) -> Self {
         let quads = [
             // Back
             Quad {
@@ -185,48 +170,30 @@ impl Cube {
                 indices: [0, 2, 1, 0, 3, 2],
             },
         ];
-        let mut vertices: Vec<DefaultVertex> = Vec::new();
-        let mut indices: Vec<u32> = Vec::new();
+        let mut vertices: [DefaultVertex; 24] = [DefaultVertex {
+            position: [1.0, -1.0, -1.0],
+            color: GREY,
+            normal: [1.0, 0.0, 0.0],
+        }; 24];
+        let mut indices: [u32; 36] = [0;36];
 
-        for (index, quad) in quads.iter().enumerate() {
-            vertices.extend(quad.vertices);
-            let n = quad.indices.clone().map(|f| f + (index as u32 * 4));
-            indices.extend(n);
+        for i in 0..quads.len() {
+            for v in 0..quads[i].vertices.len() {
+                vertices[(i*4)+v] = quads[i].vertices[v];
+            }
+            for p in 0..quads[i].indices.len() {
+                indices[(i*6)+p] = quads[i].indices[p] + (i as u32 * 4);
+            }
         }
-
         let num_indices = indices.len() as u32;
 
-        let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("Vertex Buffer"),
-            contents: bytemuck::cast_slice(&vertices),
-            usage: wgpu::BufferUsages::VERTEX,
-        });
-        let index_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("Index Buffer"),
-            contents: bytemuck::cast_slice(&indices),
-            usage: wgpu::BufferUsages::INDEX,
-        });
-
-        Cube {
-            mesh: model::Mesh {
-                name,
-                vertex_buffer,
-                index_buffer,
-                num_elements: num_indices,
-            },
-            quads,
+        Self {
+           vertices: vertices.into(),
+           indices: indices.into(),
+           num_elements: num_indices
         }
     }
-}
-
-
-pub struct Plane {
-    pub size: f32,
-    pub mesh: model::Mesh,
-}
-
-impl Plane {
-    pub fn new(name: String, device: &Device, normal:[f32; 3], size: f32, color: [f32; 3]) -> Self{
+    pub fn new_plane(normal:[f32; 3], size: f32, color: [f32; 3]) -> Self{
         let up = Vector3::new(0.0, 1.0, 0.0);
         let dot = up.dot(normal.into());
         let p = up.cross(normal.into());
@@ -261,26 +228,11 @@ impl Plane {
             ],
             indices: [0,1,2,0,2,3],
         };
-
-        let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("Vertex Buffer"),
-            contents: bytemuck::cast_slice(&quad.vertices),
-            usage: wgpu::BufferUsages::VERTEX,
-        });
-        let index_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("Index Buffer"),
-            contents: bytemuck::cast_slice(&quad.indices),
-            usage: wgpu::BufferUsages::INDEX,
-        });
         let num_elements = quad.indices.len() as u32;
-        Plane {
-            size,
-            mesh: model::Mesh {
-                name,
-                vertex_buffer,
-                index_buffer,
-                num_elements,
-            }
+        Shape {
+            num_elements,
+            vertices: quad.vertices.into(),
+            indices: quad.indices.into(),
         }
     }
 }
