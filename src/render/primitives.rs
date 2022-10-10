@@ -26,7 +26,7 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub fn new(name: String, color: [f32; 3], device: &wgpu::Device) -> Self {
+    pub fn new(name: String, _color: [f32; 3], device: &wgpu::Device) -> Self {
         let quads = [
             // Back
             Quad {

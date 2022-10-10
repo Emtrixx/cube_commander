@@ -1,6 +1,4 @@
 use cgmath::{Vector3,InnerSpace};
-use wgpu::Device;
-
 use crate::{render::{primitives::Quad, vertex_types::DefaultVertex}, utils::colors::GREY};
 
 #[derive(Clone)]
@@ -11,7 +9,7 @@ pub struct Shape {
 }
 
 impl Shape {
-    pub fn new(name: String, color: [f32; 3]) -> Self {
+    pub fn new_default_cube(_name: String, _color: [f32; 3]) -> Self {
         let quads = [
             // Back
             Quad {

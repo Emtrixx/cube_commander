@@ -1,6 +1,4 @@
-use wgpu::Device;
-
-use crate::{render::{State, model::Mesh}, ecs::{World, components::{RenderComponent, TransformComponent}}, game::shapes::Shape};
+use crate::{render::{State}, ecs::{World, components::{RenderComponent, TransformComponent}}, game::shapes::Shape};
 
 pub fn update_state_mesh_buffer(world: &World, state: &mut State) {
     let transform_components = world.borrow_component_vec::<TransformComponent>().unwrap();

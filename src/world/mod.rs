@@ -21,7 +21,7 @@ pub fn init_world(world: &mut World) {
     world.add_component_to_entity(
         cube, 
         RenderComponent {
-         mesh: Shape::new("cube".to_string(), [0.0, 1.0, 0.0])
+         mesh: Shape::new_default_cube("cube".to_string(), [0.0, 1.0, 0.0])
         }
     );
     world.add_component_to_entity(
@@ -46,7 +46,7 @@ pub fn init_world(world: &mut World) {
         world.add_component_to_entity(
             obstacles[i], 
             RenderComponent {
-             mesh: Shape::new("cube".to_string(), [0.0, 1.0, 0.0])
+             mesh: Shape::new_default_cube("cube".to_string(), [0.0, 1.0, 0.0])
             },
         );
         world.add_component_to_entity(

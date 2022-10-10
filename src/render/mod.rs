@@ -1,9 +1,8 @@
 use cgmath::prelude::*;
-use primitives::{Cube, Plane};
+use primitives::{Cube};
 use wgpu::util::DeviceExt;
 use winit::{
-    event::{ Event, KeyboardInput, VirtualKeyCode, WindowEvent},
-    event_loop::{ControlFlow, EventLoop},
+    event::{WindowEvent},
     window::Window,
 };
 use vertex_types::*;
