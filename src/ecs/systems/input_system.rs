@@ -13,7 +13,7 @@ impl Input {
         Self {
             keys: HashMap::new(),
             // TODO remove unsafe init dummy data
-            cursor: Cursor { position: PhysicalPosition { x: 0.0, y: 0.0 }, device_id: unsafe{DeviceId::dummy()} },
+            cursor: Cursor { position: PhysicalPosition { x: 50.0, y: 50.0 }, device_id: unsafe{DeviceId::dummy()} },
         }
     }
 }
@@ -28,6 +28,7 @@ pub struct Cursor {
 // System
 pub fn process_input_events(world: &mut World, event: &WindowEvent) -> bool {
     match event {
+        
         WindowEvent::KeyboardInput {
             input: KeyboardInput {
                 state,
@@ -38,11 +39,13 @@ pub fn process_input_events(world: &mut World, event: &WindowEvent) -> bool {
         } => {
             let is_pressed = *state == ElementState::Pressed;
             world.resources.input.keys.insert(*keycode, is_pressed);
-            // println!("Input: {:?}", world.resources.input);
+            println!("Input: {:?}", world.resources.input.keys);
             true
         },
         WindowEvent::CursorMoved { position, device_id, ..} => {
+            //println! ("{:?}", device_id);
             world.resources.input.cursor.device_id = *device_id;
+            //println! ("{:?}", position);
             world.resources.input.cursor.position = *position;
             true
         }

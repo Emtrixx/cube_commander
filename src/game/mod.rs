@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use crate::{
     ecs::{
-        systems::{render_system, Systems, obstacle_system, camera_system, input_system},
+        systems::{render_system, Systems, obstacle_system, camera_system, input_system, player_system },
         World,
     },
     render::State,
@@ -78,6 +78,8 @@ async fn game_loop(mut game_state: GameState) {
                                     .set_cursor_grab(true)
                                     .expect("could not grab mouse cursor");
                             }
+                            
+                                                        
                             _ => {}
                         },
                         WindowEvent::Resized(physical_size) => {
@@ -104,6 +106,7 @@ async fn game_loop(mut game_state: GameState) {
                 camera_system::update_view_projection_matrix(&game_state.instance, state.config.width as f32 / state.config.height as f32);
                 render_system::set_camera_uniform(&game_state.instance, &mut state);
                 render_system::update_state_mesh_buffer(&game_state.instance, &mut state);
+                player_system::update_player(&game_state.instance);
                 
                 match state.render() {
                     Ok(_) => {}

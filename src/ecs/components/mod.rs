@@ -64,6 +64,18 @@ pub struct CameraControllerComponent {
     pub pitch: f64,
     pub yaw: f64,
 }
+pub struct PlayerControllerComponent {
+    pub speed: f32,
+    pub sensitivity: f32,
+    pub is_forward_pressed: bool,
+    pub is_backward_pressed: bool,
+    pub is_left_pressed: bool,
+    pub is_right_pressed: bool,
+    pub last_mouse_position_x: f64,
+    pub last_mouse_position_y: f64,
+    pub pitch: f64,
+    pub yaw: f64,
+}
 
 impl CameraControllerComponent {
     pub fn new(speed: f32, sensitivity: f32) -> Self {
@@ -74,8 +86,8 @@ impl CameraControllerComponent {
             is_backward_pressed: false,
             is_left_pressed: false,
             is_right_pressed: false,
-            last_mouse_position_x: 50.,
-            last_mouse_position_y: 50.,
+            last_mouse_position_x: 75.,
+            last_mouse_position_y: 75.,
             pitch: 0.,
             yaw: -90.,
         }
@@ -115,4 +127,8 @@ impl ChildComponent {
     pub fn get_transform(&self) -> [f32;3] {
         self.transform.position
     }
+}
+// Player Component
+pub struct PlayerComponent {
+
 }

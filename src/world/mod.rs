@@ -1,7 +1,8 @@
 use std::time::Duration;
+use crate::utils::colors::GREEN;
 
 use crate::{
-    ecs::{components::{RenderComponent, TransformComponent, ObstacleComponent, CameraComponent, CameraUniformComponent, CameraControllerComponent}, World},
+    ecs::{components::{RenderComponent, TransformComponent, ObstacleComponent, CameraComponent, CameraUniformComponent, CameraControllerComponent, PlayerComponent}, World},
     game::shapes::Shape,
 };
 
@@ -21,8 +22,9 @@ pub fn init_world(world: &mut World) {
     world.add_component_to_entity(
         cube, 
         RenderComponent {
-         mesh: Shape::new_default_cube("cube".to_string(), [0.0, 1.0, 0.0])
+         mesh: Shape::new_default_cube("cube".to_string(), GREEN)
         }
+    
     );
     world.add_component_to_entity(
         cube, 
@@ -32,6 +34,11 @@ pub fn init_world(world: &mut World) {
             scale: [1.0, 1.0, 1.0],
         }
     );
+    world.add_component_to_entity(
+        cube, 
+        PlayerComponent {}
+    );
+
 
     // Camera
     let camera = world.new_entity();

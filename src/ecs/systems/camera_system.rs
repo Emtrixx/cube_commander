@@ -66,9 +66,14 @@ pub fn process_input(world: &World) {
 
                 // Mouse
                 let position = world.resources.input.cursor.position;
+                //println!(" {:}", position.x );
+                //println!(" {:}", position.y );
                 let xoffset = (controller.last_mouse_position_x - position.x) * controller.sensitivity as f64;
                 let yoffset = (position.y - controller.last_mouse_position_y) * controller.sensitivity as f64;
+                //println!("{:}",xoffset);
+               // println!("{:}", yoffset);
                 controller.pitch -= yoffset;
+               
                 controller.yaw -= xoffset;
                 
                 if controller.pitch > 89.0 {
@@ -82,7 +87,7 @@ pub fn process_input(world: &World) {
     }
 }
 
-// Camera Uniform
+// Camera Uniformt
 pub fn update_view_projection_matrix(world: &World, aspect: f32) {
     if let (Some(camera_vec), Some(mut camera_uniform_vec)) = (
         world.borrow_component_vec::<CameraComponent>(),
