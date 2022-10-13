@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use crate::{
     ecs::{
-        systems::{render_system, Systems, obstacle_system},
+        systems::{render_system, Systems, obstacle_system, camera_system, input_system},
         World,
     },
     render::State,
@@ -36,7 +36,7 @@ pub async fn init_game() {
     game_loop(game_state).await;
 }
 
-async fn game_loop(game_state: GameState) {
+async fn game_loop(mut game_state: GameState) {
     let event_loop = EventLoop::new();
     let window = Window::new(&event_loop).unwrap();
     let mut state = State::new(&window).await;
@@ -44,18 +44,12 @@ async fn game_loop(game_state: GameState) {
     let mut last_render_time = Instant::now();
 
     event_loop.run(move |event, _, control_flow| {
-        // Time
-        let now = Instant::now();
-        let dt = now - last_render_time;
-        last_render_time = now;
-
         // Systems
         // for system in &game_state.systems.list {
         //     system.update(game_state.instance);
         // }
         // spawn_obstacle(&mut game_state.instance, dt);
-        render_system::update_state_mesh_buffer(&game_state.instance, &mut state);
-        obstacle_system::update_obstacles(&game_state.instance, dt);
+
 
         // RENDER AND INPUT
         match event {
@@ -63,7 +57,8 @@ async fn game_loop(game_state: GameState) {
                 ref event,
                 window_id,
             } if window_id == window.id() => {
-                if !state.input(event) {
+                input_system::process_input_events(&mut game_state.instance, event);
+                // if !input_system::process_input_events(&mut game_state.instance, event) && !state.input(event) {
                     match event {
                         WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                         WindowEvent::KeyboardInput {
@@ -93,10 +88,23 @@ async fn game_loop(game_state: GameState) {
                         }
                         _ => {}
                     }
-                }
+                // }
             }
             Event::RedrawRequested(window_id) if window_id == window.id() => {
                 state.update();
+
+                // Time
+                let now = Instant::now();
+                let dt = now - last_render_time;
+                last_render_time = now;
+
+                obstacle_system::update_obstacles(&game_state.instance, dt);
+                camera_system::process_input(&game_state.instance);
+                camera_system::update_camera(&game_state.instance);
+                camera_system::update_view_projection_matrix(&game_state.instance, state.config.width as f32 / state.config.height as f32);
+                render_system::set_camera_uniform(&game_state.instance, &mut state);
+                render_system::update_state_mesh_buffer(&game_state.instance, &mut state);
+                
                 match state.render() {
                     Ok(_) => {}
                     // Reconfigure the surface if lost
@@ -113,7 +121,8 @@ async fn game_loop(game_state: GameState) {
                 window.request_redraw();
             }
             _ => {}
-        }
+        }        
+
         // TODO find right place
         window
             .set_cursor_position(winit::dpi::LogicalPosition::new(50., 50.))

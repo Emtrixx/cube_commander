@@ -1,4 +1,4 @@
-use crate::{render::{State}, ecs::{World, components::{RenderComponent, TransformComponent}}, game::shapes::Shape};
+use crate::{render::{State}, ecs::{World, components::{RenderComponent, TransformComponent, CameraUniformComponent}}, game::shapes::Shape};
 
 pub fn update_state_mesh_buffer(world: &World, state: &mut State) {
     let transform_components = world.borrow_component_vec::<TransformComponent>().unwrap();
@@ -21,5 +21,16 @@ pub fn update_state_mesh_buffer(world: &World, state: &mut State) {
             }
         }
         state.set_mesh_buffer(meshes);
+    }
+}
+
+pub fn set_camera_uniform(world: &World, state: &mut State) {
+    if let Some(uniform_vec) = world.borrow_component_vec::<CameraUniformComponent>()
+    {
+        for uniform in uniform_vec.iter() {
+            if let Some(uniform) = uniform {
+                state.set_camera_uniform(*uniform);
+            }
+        }
     }
 }

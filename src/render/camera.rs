@@ -1,7 +1,7 @@
 use cgmath::Vector3;
 use cgmath::prelude::*;
 
-use winit::event::{WindowEvent, KeyboardInput, VirtualKeyCode, ElementState};
+use winit::event::{WindowEvent};
 
 #[rustfmt::skip]
 pub const OPENGL_TO_WGPU_MATRIX: cgmath::Matrix4<f32> = cgmath::Matrix4::new(
@@ -85,35 +85,6 @@ impl CameraController {
 
     pub fn process_events(&mut self, event: &WindowEvent) -> bool {
         match event {
-            WindowEvent::KeyboardInput {
-                input: KeyboardInput {
-                    state,
-                    virtual_keycode: Some(keycode),
-                    ..
-                },
-                ..
-            } => {
-                let is_pressed = *state == ElementState::Pressed;
-                match keycode {
-                    VirtualKeyCode::W | VirtualKeyCode::Up => {
-                        self.is_forward_pressed = is_pressed;
-                        true
-                    }
-                    VirtualKeyCode::A | VirtualKeyCode::Left => {
-                        self.is_left_pressed = is_pressed;
-                        true
-                    }
-                    VirtualKeyCode::S | VirtualKeyCode::Down => {
-                        self.is_backward_pressed = is_pressed;
-                        true
-                    }
-                    VirtualKeyCode::D | VirtualKeyCode::Right => {
-                        self.is_right_pressed = is_pressed;
-                        true
-                    }
-                    _ => false,
-                }
-            },
             WindowEvent::CursorMoved { position, ..} => {
                 let xoffset = (self.last_mouse_position_x - position.x) * self.sensitivity as f64;
                 let yoffset = (position.y - self.last_mouse_position_y) * self.sensitivity as f64;

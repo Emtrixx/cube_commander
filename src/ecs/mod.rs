@@ -1,4 +1,8 @@
-use std::cell::{RefCell,RefMut, Ref};
+use std::{cell::{RefCell,RefMut, Ref}};
+
+
+
+use self::systems::input_system::Input;
 
 pub mod systems;
 pub mod components;
@@ -25,9 +29,22 @@ impl<T: 'static> ComponentVec for RefCell<Vec<Option<T>>> {
     }
 }
 
+pub struct Resources {
+    input: Input,
+}
+
+impl Resources {
+    pub fn new() -> Self {
+        Self {
+            input: Input::new(),
+        }
+    }
+}
+
 pub struct World {
     entities_count: usize,
     component_vecs: Vec<Box<dyn ComponentVec>>,
+    resources: Resources,
 }
 
 impl World {
@@ -35,6 +52,7 @@ impl World {
         Self {
             entities_count: 0,
             component_vecs: Vec::new(),
+            resources: Resources::new(),
         }
     }
 
@@ -119,4 +137,27 @@ impl World {
         }
         None
     }
+
+    pub fn borrow_component<ComponentType: 'static>(&self, entity: usize) -> Option<&ComponentType> {
+        if let Some(component_vec) = self.borrow_component_vec::<ComponentType>(){
+            // if let Some(component) = component_vec.get(entity) {
+            //     return component.as_ref();
+            // }
+
+            // TODO fucking solve this shit
+            // return component_vec.get(entity).and(unwrap_or(None).as_ref()
+        };
+        return None
+    }
 }
+
+
+// Resources
+// struct Res<T> (T);
+
+// impl<T> Res<T> 
+// where T: 'static {
+//     pub fn new(content: T) -> Self {
+//         Res(content)
+//     }
+// }

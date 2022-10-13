@@ -3,6 +3,9 @@ use super::World;
 pub mod render_system;
 pub mod input_system;
 pub mod obstacle_system;
+pub mod camera_system;
+pub mod transform_system;
+pub mod relation_system;
 
 pub struct Systems {
     pub list: Vec<Box<dyn EcsSystem>>,

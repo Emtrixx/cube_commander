@@ -15,7 +15,7 @@ pub fn update_obstacles(world: &World, dt: Duration) {
                 .iter_mut()
                 .zip(obstacle_components.iter_mut());
 
-            for (index, (transform, obstacle)) in zip
+            for (_, (transform, obstacle)) in zip
                 .filter_map(|(transform, obstacle)| Some((transform.as_mut()?, obstacle.as_mut()?))).enumerate()
             {
                 // Update position
@@ -24,7 +24,6 @@ pub fn update_obstacles(world: &World, dt: Duration) {
                 // TODO Use Time
                 obstacle.time_alive += dt;
                 if obstacle.time_alive.as_secs() > 2 && transform.position[2] > 3.0 {
-                    println!("Entity {} has perished!", index);
                     obstacle.time_alive = Duration::new(0, 0);
                     transform.position = [rng.gen_range(0.0..16.0) - 8.0, 0.0, -20.0];
                 }

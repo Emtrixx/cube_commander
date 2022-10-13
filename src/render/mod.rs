@@ -2,11 +2,10 @@ use cgmath::prelude::*;
 use primitives::{Cube};
 use wgpu::util::DeviceExt;
 use winit::{
-    event::{WindowEvent},
     window::Window,
 };
 use vertex_types::*;
-use crate::{render::model::{DrawLight, DrawGeometry}, game::shapes::Shape};
+use crate::{render::model::{DrawLight, DrawGeometry}, game::shapes::Shape, ecs::components::CameraUniformComponent};
 
 use self::model::Mesh;
 
@@ -21,15 +20,12 @@ pub struct State {
     surface: wgpu::Surface,
     pub device: wgpu::Device,
     queue: wgpu::Queue,
-    config: wgpu::SurfaceConfiguration,
+    pub config: wgpu::SurfaceConfiguration,
     pub size: winit::dpi::PhysicalSize<u32>,
     clear_color: wgpu::Color,
     render_pipeline: wgpu::RenderPipeline,
-    camera: camera::Camera,
-    camera_uniform: camera::CameraUniform,
     camera_buffer: wgpu::Buffer,
     camera_bind_group: wgpu::BindGroup,
-    camera_controller: camera::CameraController,
     depth_texture: texture::Texture,
     mesh: Mesh,
     cube: Cube,
@@ -89,23 +85,8 @@ impl State {
         surface.configure(&device, &config);
 
         // CAMERA
-        let camera_controller = camera::CameraController::new(0.05, 0.1);
-        let camera = camera::Camera {
-            // position the camera one unit up and 2 units back
-            // +z is out of the screen
-            eye: (0.0, 1.0, 2.0).into(),
-            // have it look at the origin
-            target: (0.0, 0.0, 0.0).into(),
-            // which way is "up"
-            up: cgmath::Vector3::unit_y(),
-            aspect: config.width as f32 / config.height as f32,
-            fovy: 45.0,
-            znear: 0.1,
-            zfar: 100.0,
-        };
-        let mut camera_uniform = camera::CameraUniform::new();
-        camera_uniform.update_view_proj(&camera);
-
+        // TODO remove dummy uniform
+        let camera_uniform = camera::CameraUniform::new();
         let camera_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("Camera Buffer"),
             contents: bytemuck::cast_slice(&[camera_uniform]),
@@ -234,11 +215,8 @@ impl State {
                 a: 1.0,
             },
             render_pipeline,
-            camera,
-            camera_uniform,
             camera_buffer,
             camera_bind_group,
-            camera_controller,
             depth_texture,
             cube,
             // plane,
@@ -263,30 +241,14 @@ impl State {
         }
     }
 
-    pub fn input(&mut self, event: &WindowEvent) -> bool {
-        let bool = self.camera_controller.process_events(event);
-        match event {
-            &WindowEvent::CursorMoved { position, .. } => {
-                self.clear_color = wgpu::Color {
-                    r: (position.x / self.size.width as f64),
-                    g: (position.y / self.size.height as f64),
-                    b: 0.0,
-                    a: 1.0,
-                }
-            }
-            _ => (),
-        }
-        bool
-    }
-
     pub fn update(&mut self) {
-        self.camera_controller.update_camera(&mut self.camera);
-        self.camera_uniform.update_view_proj(&self.camera);
-        self.queue.write_buffer(
-            &self.camera_buffer,
-            0,
-            bytemuck::cast_slice(&[self.camera_uniform]),
-        );
+        // self.camera_controller.update_camera(&mut self.camera);
+        // self.camera_uniform.update_view_proj(&self.camera);
+        // self.queue.write_buffer(
+        //     &self.camera_buffer,
+        //     0,
+        //     bytemuck::cast_slice(&[self.camera_uniform]),
+        // );
 
         let old_position: cgmath::Vector3<_> = self.light_uniform.position.into();
         self.light_uniform.position =
@@ -331,13 +293,14 @@ impl State {
                 }),
             });
 
+            // OLD
             render_pass.set_pipeline(&self.light_render_pipeline);
             render_pass.draw_light_mesh(&self.cube.mesh, &self.camera_bind_group, &self.light_bind_group);
-
-            render_pass.set_pipeline(&self.render_pipeline);
             // render_pass.draw_mesh(&self.cube.mesh, &self.camera_bind_group, &self.light_bind_group);
             // render_pass.draw_mesh(&self.plane.mesh, &self.camera_bind_group, &self.light_bind_group);
-            
+
+            // Default Pipeline with concatenated mesh
+            render_pass.set_pipeline(&self.render_pipeline);
             render_pass.draw_mesh(&self.mesh, &self.camera_bind_group, &self.light_bind_group);
         }
 
@@ -379,6 +342,14 @@ impl State {
         };
         
         self.mesh = mesh;
+    }
+
+    pub fn set_camera_uniform(&mut self, camera_uniform: CameraUniformComponent) {
+        self.queue.write_buffer(
+            &self.camera_buffer,
+            0,
+            bytemuck::cast_slice(&[camera_uniform]),
+        );
     }
 }
 

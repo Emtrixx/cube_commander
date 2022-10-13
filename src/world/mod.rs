@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use crate::{
-    ecs::{components::{RenderComponent, TransformComponent, ObstacleComponent}, World},
+    ecs::{components::{RenderComponent, TransformComponent, ObstacleComponent, CameraComponent, CameraUniformComponent, CameraControllerComponent}, World},
     game::shapes::Shape,
 };
 
@@ -31,6 +31,31 @@ pub fn init_world(world: &mut World) {
             rotation: [0.0, 0.0, 0.0],
             scale: [1.0, 1.0, 1.0],
         }
+    );
+
+    // Camera
+    let camera = world.new_entity();
+    world.add_component_to_entity(camera, 
+        CameraComponent {
+            // position the camera one unit up and 2 units back
+            // +z is out of the screen
+            eye: (0.0, 1.0, 2.0).into(),
+            // have it look at the origin
+            target: (0.0, 0.0, 0.0).into(),
+            // which way is "up"
+            up: cgmath::Vector3::unit_y(),
+            // TODO fet real aspect
+            aspect: 16 as f32 / 9 as f32,
+            fovy: 45.0,
+            znear: 0.1,
+            zfar: 100.0,
+        }
+    );
+    world.add_component_to_entity(camera,
+        CameraUniformComponent::new()
+    );
+    world.add_component_to_entity(camera, 
+        CameraControllerComponent::new(0.05, 0.1)
     );
 
     //  Obstacles
