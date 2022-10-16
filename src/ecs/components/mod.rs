@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use cgmath::SquareMatrix;
+use cgmath::{SquareMatrix, Vector3};
 
 use crate::game::shapes::Shape;
 
@@ -8,33 +8,49 @@ pub struct RenderComponent {
     pub mesh: Shape,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct TransformComponent {
-    pub position: [f32; 3],
-    pub rotation: [f32; 3],
-    pub scale: [f32; 3],
+    pub position: Vector3<f32>,
+    pub rotation: Vector3<f32>,
+    pub scale: Vector3<f32>,
 }
 
-// impl TransformComponent {
-//     pub fn set_position(&mut self, position: [f32; 3]) {
-//         self.position = position;
-//     }
-//     pub fn get_position(&self) -> [f32; 3] {
-//         return self.position;
-//     }
-//     pub fn set_rotation(&mut self, rotation: [f32; 3]) {
-//         self.rotation = rotation;
-//     }
-//     pub fn get_rotation(&self) -> [f32; 3] {
-//         return self.rotation;
-//     }
-//     pub fn set_scale(&mut self, scale: [f32; 3]) {
-//         self.scale = scale;
-//     }
-//     pub fn get_scale(&self) -> [f32; 3] {
-//         return self.scale;
-//     }
-// }
+impl TransformComponent {
+    pub fn new() -> Self {
+        Self {
+            position: Vector3::new(0.0, 0.0, 0.0),
+            rotation: Vector3::new(0.0, 0.0, 0.0),
+            scale: Vector3::new(1.0, 1.0, 1.0),
+        }
+    }
+    pub fn from(position: Vector3<f32>) -> Self {
+        Self {
+            position,
+            rotation: Vector3::new(0.0, 0.0, 0.0),
+            scale: Vector3::new(1.0, 1.0, 1.0),
+        }
+    }
+    pub fn set_position(&mut self, x: f32, y: f32, z: f32) {
+        self.position.x = x;
+        self.position.y = y;
+        self.position.z = z;
+    }
+    pub fn get_position(&self) -> Vector3<f32> {
+        return self.position;
+    }
+    pub fn set_rotation(&mut self, rotation: Vector3<f32>) {
+        self.rotation = rotation;
+    }
+    pub fn get_rotation(&self) -> Vector3<f32> {
+        return self.rotation;
+    }
+    pub fn set_scale(&mut self, scale: Vector3<f32>) {
+        self.scale = scale;
+    }
+    pub fn get_scale(&self) -> Vector3<f32> {
+        return self.scale;
+    }
+}
 
 pub struct ObstacleComponent {
     pub time_alive: Duration,
@@ -98,21 +114,33 @@ impl CameraUniformComponent {
     }
 }
 
-
 // Parent Child Relation
 pub struct ParentComponent {
     pub children: Vec<usize>,
 }
 
+impl ParentComponent {
+    pub fn new(child: usize) -> Self {
+        Self {
+            children: vec![child],
+        }
+    }
+}
+
 pub struct ChildComponent {
-    pub transform: TransformComponent
+    pub transform: TransformComponent,
 }
 
 impl ChildComponent {
-    pub fn set_transform(&mut self, position: [f32;3]) {
+    pub fn new(transform: TransformComponent) -> Self {
+        Self {
+            transform,
+        }
+    }
+    pub fn set_transform(&mut self, position: Vector3<f32>) {
         self.transform.position = position;
     }
-    pub fn get_transform(&self) -> [f32;3] {
+    pub fn get_transform(&self) -> Vector3<f32> {
         self.transform.position
     }
 }

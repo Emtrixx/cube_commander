@@ -13,7 +13,7 @@ impl Input {
         Self {
             keys: HashMap::new(),
             // TODO remove unsafe init dummy data
-            cursor: Cursor { position: PhysicalPosition { x: 0.0, y: 0.0 }, device_id: unsafe{DeviceId::dummy()} },
+            cursor: Cursor { position: PhysicalPosition { x: 50.0, y: 50.0 }, device_id: unsafe{DeviceId::dummy()} },
         }
     }
 }

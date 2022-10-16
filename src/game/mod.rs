@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use crate::{
     ecs::{
-        systems::{render_system, Systems, obstacle_system, camera_system, input_system},
+        systems::{render_system, Systems, obstacle_system, camera_system, input_system, relation_system},
         World,
     },
     render::State,
@@ -99,6 +99,7 @@ async fn game_loop(mut game_state: GameState) {
                 last_render_time = now;
 
                 obstacle_system::update_obstacles(&game_state.instance, dt);
+                relation_system::update_children_transform(&game_state.instance);
                 camera_system::process_input(&game_state.instance);
                 camera_system::update_camera(&game_state.instance);
                 camera_system::update_view_projection_matrix(&game_state.instance, state.config.width as f32 / state.config.height as f32);

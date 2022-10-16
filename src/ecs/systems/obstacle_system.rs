@@ -21,11 +21,11 @@ pub fn update_obstacles(world: &World, dt: Duration) {
                 // Update position
                 transform.position[2] += 2. * dt.as_secs_f32();
 
-                // TODO Use Time
                 obstacle.time_alive += dt;
-                if obstacle.time_alive.as_secs() > 2 && transform.position[2] > 3.0 {
+                if transform.position[2] > 3.0 {
                     obstacle.time_alive = Duration::new(0, 0);
-                    transform.position = [rng.gen_range(0.0..16.0) - 8.0, 0.0, -20.0];
+                    transform.position.x = rng.gen_range(0.0..16.0) - 8.0;
+                    transform.position.z = -20.0;
                 }
             }
         }

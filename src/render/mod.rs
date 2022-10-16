@@ -27,7 +27,7 @@ pub struct State {
     camera_buffer: wgpu::Buffer,
     camera_bind_group: wgpu::BindGroup,
     depth_texture: texture::Texture,
-    mesh: Mesh,
+    mesh: Option<Mesh>,
     cube: Cube,
     // plane: Plane,
     // vertex_buffer: wgpu::Buffer,
@@ -220,7 +220,7 @@ impl State {
             depth_texture,
             cube,
             // plane,
-            mesh: cube2.mesh,
+            mesh: None,
             // vertex_buffer: cube.mesh.vertex_buffer,
             // index_buffer: cube.mesh.index_buffer,
             light_uniform,
@@ -242,15 +242,7 @@ impl State {
     }
 
     pub fn update(&mut self) {
-        // self.camera_controller.update_camera(&mut self.camera);
-        // self.camera_uniform.update_view_proj(&self.camera);
-        // self.queue.write_buffer(
-        //     &self.camera_buffer,
-        //     0,
-        //     bytemuck::cast_slice(&[self.camera_uniform]),
-        // );
-
-        let old_position: cgmath::Vector3<_> = self.light_uniform.position.into();
+     let old_position: cgmath::Vector3<_> = self.light_uniform.position.into();
         self.light_uniform.position =
             (cgmath::Quaternion::from_axis_angle((0.0, 1.0, 0.0).into(), cgmath::Deg(0.5))
                 * old_position)
@@ -300,8 +292,10 @@ impl State {
             // render_pass.draw_mesh(&self.plane.mesh, &self.camera_bind_group, &self.light_bind_group);
 
             // Default Pipeline with concatenated mesh
-            render_pass.set_pipeline(&self.render_pipeline);
-            render_pass.draw_mesh(&self.mesh, &self.camera_bind_group, &self.light_bind_group);
+            if let Some(mesh) = &self.mesh {
+                render_pass.set_pipeline(&self.render_pipeline);
+                render_pass.draw_mesh(mesh, &self.camera_bind_group, &self.light_bind_group);
+            }
         }
 
         self.queue.submit(std::iter::once(encoder.finish()));
@@ -341,7 +335,7 @@ impl State {
             num_elements
         };
         
-        self.mesh = mesh;
+        self.mesh = Some(mesh);
     }
 
     pub fn set_camera_uniform(&mut self, camera_uniform: CameraUniformComponent) {
