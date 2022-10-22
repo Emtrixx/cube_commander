@@ -1,8 +1,8 @@
 use std::time::Duration;
-use crate::utils::colors::GREEN;
+use image::math::Vector3;
 
 use crate::{
-    ecs::{components::{RenderComponent, TransformComponent, ObstacleComponent, CameraComponent, CameraUniformComponent, CameraControllerComponent, PlayerComponent}, World},
+    ecs::{components::{RenderComponent, TransformComponent, ObstacleComponent, CameraComponent, CameraUniformComponent, CameraControllerComponent}, World},
     game::shapes::Shape,
 };
 
@@ -18,35 +18,25 @@ pub fn init_world(world: &mut World) {
     );
 
     // Player
-    let cube = world.new_entity();
+    let player = world.new_entity();
     world.add_component_to_entity(
-        cube, 
+        player, 
+        TransformComponent::new()
+    );
+    world.add_component_to_entity(
+        player, 
         RenderComponent {
-         mesh: Shape::new_default_cube(GREEN)
-        }
-    
-    );
-    world.add_component_to_entity(
-        cube, 
-        TransformComponent {
-            position: [0.0, 0.1, 0.0].into(),
-            rotation: [0.0, 0.0, 0.0].into(),
-            scale: [1.0, 1.0, 1.0].into(),
+         mesh: Shape::new_default_cube(RED)
         }
     );
-    world.add_component_to_entity(
-        cube, 
-        PlayerComponent {}
-    );
-
-
     // Camera
+    let camera_position = (0.0, 2.0, 4.0);
     let camera = world.new_entity();
     world.add_component_to_entity(camera, 
         CameraComponent {
             // position the camera one unit up and 2 units back
             // +z is out of the screen
-            eye: (0.0, 1.0, 2.0).into(),
+            eye: camera_position.into(),
             // have it look at the origin
             target: (0.0, 0.0, 0.0).into(),
             // which way is "up"
@@ -64,6 +54,10 @@ pub fn init_world(world: &mut World) {
     world.add_component_to_entity(camera, 
         CameraControllerComponent::new(0.05, 0.1)
     );
+    world.add_component_to_entity(camera, 
+        TransformComponent::from(Vector3::new(camera_position.0, camera_position.1, camera_position.2))
+    );
+    relation_system::add_child_component(world, camera, player);
 
     //  Obstacles
     let mut obstacles: Vec<usize> = vec![];
@@ -78,16 +72,12 @@ pub fn init_world(world: &mut World) {
         world.add_component_to_entity(
             obstacles[i], 
             RenderComponent {
-             mesh: Shape::new_default_cube([0.0, 1.0, 0.0])
+             mesh: Shape::new_default_cube(BLUE)
             },
         );
         world.add_component_to_entity(
             obstacles[i], 
-            TransformComponent {
-                position: [0.0, 0.0, -3. * (i + 1) as f32].into(),
-                rotation: [0.0, 0.0, 0.0].into(),
-                scale: [1.0, 1.0, 1.0].into(),
-            }
+            TransformComponent::from(Vector3::new(0.0, 0.0, -10. + (-5. * (i + 1) as f32)))
         );
     }
 }

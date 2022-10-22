@@ -11,9 +11,9 @@ pub fn update_state_mesh_buffer(world: &World, state: &mut State) {
                 // If there is also a transform component
                 if let Some(transform) = transform_components.get(index).unwrap() {
                     for v in 0..render_component.mesh.vertices.len() {
-                        for i in 0..3 {
-                            mesh.vertices[v].position[i] += transform.position[i];
-                        }
+                        mesh.vertices[v].position[0] += transform.position.x;
+                        mesh.vertices[v].position[1] += transform.position.y;
+                        mesh.vertices[v].position[2] += transform.position.z;
                     }
                 }
 

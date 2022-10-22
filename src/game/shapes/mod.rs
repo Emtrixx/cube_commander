@@ -9,29 +9,29 @@ pub struct Shape {
 }
 
 impl Shape {
-    pub fn new_default_cube(_name: String, _color: [f32; 3]) -> Self {
+    pub fn new_default_cube(color: [f32; 3]) -> Self {
         let quads = [
             // Back
             Quad {
                 vertices: [
                     DefaultVertex {
                         position: [-1.0, -1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [0., 0., -1.0],
                     },
                     DefaultVertex {
                         position: [1.0, -1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [0., 0., -1.0],
                     },
                     DefaultVertex {
                         position: [-1.0, 1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [0., 0., -1.0],
                     },
                     DefaultVertex {
                         position: [1.0, 1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [0., 0., -1.0],
                     },
                 ],
@@ -42,22 +42,22 @@ impl Shape {
                 vertices: [
                     DefaultVertex {
                         position: [-1.0, 1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, 1.0, 0.0],
                     },
                     DefaultVertex {
                         position: [-1.0, 1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, 1.0, 0.0],
                     },
                     DefaultVertex {
                         position: [1.0, 1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, 1.0, 0.0],
                     },
                     DefaultVertex {
                         position: [1.0, 1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, 1.0, 0.0],
                     },
                 ],
@@ -68,22 +68,22 @@ impl Shape {
                 vertices: [
                     DefaultVertex {
                         position: [-1.0, -1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, 0.0, 1.0],
                     },
                     DefaultVertex {
                         position: [1.0, -1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, 0.0, 1.0],
                     },
                     DefaultVertex {
                         position: [-1.0, 1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, 0.0, 1.0],
                     },
                     DefaultVertex {
                         position: [1.0, 1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, 0.0, 1.0],
                     },
                 ],
@@ -94,22 +94,22 @@ impl Shape {
                 vertices: [
                     DefaultVertex {
                         position: [-1.0, -1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, -1.0, 0.0],
                     },
                     DefaultVertex {
                         position: [1.0, -1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, -1.0, 0.0],
                     },
                     DefaultVertex {
                         position: [-1.0, -1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, -1.0, 0.0],
                     },
                     DefaultVertex {
                         position: [1.0, -1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [0.0, -1.0, 0.0],
                     },
                 ],
@@ -120,22 +120,22 @@ impl Shape {
                 vertices: [
                     DefaultVertex {
                         position: [-1.0, -1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [-1.0, 0.0, 0.0],
                     },
                     DefaultVertex {
                         position: [-1.0, 1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [-1.0, 0.0, 0.0],
                     },
                     DefaultVertex {
                         position: [-1.0, 1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [-1.0, 0.0, 0.0],
                     },
                     DefaultVertex {
                         position: [-1.0, -1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [-1.0, 0.0, 0.0],
                     },
                 ],
@@ -146,22 +146,22 @@ impl Shape {
                 vertices: [
                     DefaultVertex {
                         position: [1.0, -1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [1.0, 0.0, 0.0],
                     },
                     DefaultVertex {
                         position: [1.0, 1.0, 1.0],
-                        color: GREY,
+                        color,
                         normal: [1.0, 0.0, 0.0],
                     },
                     DefaultVertex {
                         position: [1.0, 1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [1.0, 0.0, 0.0],
                     },
                     DefaultVertex {
                         position: [1.0, -1.0, -1.0],
-                        color: GREY,
+                        color,
                         normal: [1.0, 0.0, 0.0],
                     },
                 ],

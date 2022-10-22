@@ -1,4 +1,4 @@
-use std::{cell::{RefCell,RefMut, Ref}};
+use std::{cell::{RefCell,RefMut, Ref}, borrow::Borrow};
 
 
 
@@ -138,17 +138,24 @@ impl World {
         None
     }
 
-    pub fn borrow_component<ComponentType: 'static>(&self, entity: usize) -> Option<&ComponentType> {
-        if let Some(component_vec) = self.borrow_component_vec::<ComponentType>(){
-            // if let Some(component) = component_vec.get(entity) {
-            //     return component.as_ref();
-            // }
+    // pub fn borrow_component<ComponentType: 'static>(&self, entity: usize) -> Option<RefMut<Option<ComponentType>>> {
+    //     for component_vec in self.component_vecs.iter_mut() {
+    //         if let Some(component_vec) = component_vec
+    //             .as_any_mut()
+    //             .downcast_mut::<RefCell<Vec<Option<ComponentType>>>>()
+    //         {
 
-            // TODO fucking solve this shit
-            // return component_vec.get(entity).and(unwrap_or(None).as_ref()
-        };
-        return None
-    }
+    //             return component_vec.borrow_mut();
+
+    //             // if let Some(component) = &component_vec.get_mut()[entity] {}
+    //             // return component_vec.borrow_mut().get_mut(entity)
+    //             // if let Some(component) = component_vec.borrow().get_mut(entity) {
+    //             //     return component.as_mut();
+    //             // }
+    //         }
+    //     }
+    //     None
+    // }
 }
 
 

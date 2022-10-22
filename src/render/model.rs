@@ -6,6 +6,18 @@ pub struct Mesh {
     pub num_elements: u32,
 }
 
+// impl Mesh {
+//     pub fn empty() -> Self {
+//         let empty: [f32; 0] = [];
+//         Self {
+//             name: "empty".to_string(),
+//             vertex_buffer: wgpu::Buffer::from(empty),
+//             index_buffer: [].into(),
+//             num_elements: 0,
+//         }
+//     }
+// }
+
 pub trait DrawGeometry<'a> {
     fn draw_mesh(
         &mut self,

@@ -2,7 +2,7 @@ use cgmath::{InnerSpace, Vector3};
 use winit::event::VirtualKeyCode;
 
 use crate::ecs::{
-    components::{CameraComponent, CameraControllerComponent, CameraUniformComponent},
+    components::{CameraComponent, CameraControllerComponent, CameraUniformComponent, TransformComponent},
     World,
 };
 
@@ -15,12 +15,13 @@ pub const OPENGL_TO_WGPU_MATRIX: cgmath::Matrix4<f32> = cgmath::Matrix4::new(
 );
 
 pub fn update_camera(world: &World) {
-    if let (Some(mut camera_vec), Some(mut controller_vec)) = (
+    if let (Some(mut camera_vec), Some(mut controller_vec), Some(mut transform_vec)) = (
         world.borrow_component_vec_mut::<CameraComponent>(),
         world.borrow_component_vec_mut::<CameraControllerComponent>(),
+        world.borrow_component_vec_mut::<TransformComponent>(),
     ) {
-        for (camera, controller) in camera_vec.iter_mut().zip(controller_vec.iter_mut()) {
-            if let (Some(camera), Some(controller)) = (camera, controller) {
+        for ((camera, controller), transform) in camera_vec.iter_mut().zip(controller_vec.iter_mut()).zip(transform_vec.iter_mut()) {
+            if let (Some(camera), Some(controller), Some(transform)) = (camera, controller, transform) {
                 let x = controller.yaw.to_radians().cos() * controller.pitch.to_radians().cos();
                 let y = controller.pitch.to_radians().sin();
                 let z = controller.yaw.to_radians().sin() * controller.pitch.to_radians().cos();
@@ -39,7 +40,11 @@ pub fn update_camera(world: &World) {
                 if controller.is_left_pressed {
                     camera.eye -= controller.speed * forward_norm.cross(camera.up);
                 }
+                camera.eye.y = 2.0;
                 camera.target = camera.eye + forward;
+
+                // Update transform
+                transform.set_position(camera.eye.x, camera.eye.y, camera.eye.z);
             }
         }
     }
