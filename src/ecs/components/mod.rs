@@ -8,7 +8,7 @@ pub struct RenderComponent {
     pub mesh: Shape,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct TransformComponent {
     pub position: Vector3<f32>,
     pub rotation: Vector3<f32>,
@@ -71,37 +71,19 @@ pub struct CameraComponent {
 pub struct CameraControllerComponent {
     pub speed: f32,
     pub sensitivity: f32,
-    pub is_forward_pressed: bool,
-    pub is_backward_pressed: bool,
-    pub is_left_pressed: bool,
-    pub is_right_pressed: bool,
-    pub last_mouse_position_x: f64,
-    pub last_mouse_position_y: f64,
-    pub pitch: f64,
-    pub yaw: f64,
-}
-pub struct PlayerControllerComponent {
-    pub speed: f32,
-    pub sensitivity: f32,
-    pub is_forward_pressed: bool,
-    pub is_backward_pressed: bool,
-    pub is_left_pressed: bool,
-    pub is_right_pressed: bool,
     pub last_mouse_position_x: f64,
     pub last_mouse_position_y: f64,
     pub pitch: f64,
     pub yaw: f64,
 }
 
+
+
 impl CameraControllerComponent {
     pub fn new(speed: f32, sensitivity: f32) -> Self {
         Self {
             speed,
             sensitivity,
-            is_forward_pressed: false,
-            is_backward_pressed: false,
-            is_left_pressed: false,
-            is_right_pressed: false,
             last_mouse_position_x: 75.,
             last_mouse_position_y: 75.,
             pitch: 0.,
@@ -127,8 +109,10 @@ impl CameraUniformComponent {
 }
 
 // Parent Child Relation
+#[derive(Debug)]
 pub struct ParentComponent {
     pub children: Vec<usize>,
+    
 }
 
 impl ParentComponent {
@@ -138,7 +122,7 @@ impl ParentComponent {
         }
     }
 }
-
+#[derive(Debug)]
 pub struct ChildComponent {
     pub transform: TransformComponent,
 }
@@ -158,5 +142,29 @@ impl ChildComponent {
 }
 // Player Component
 pub struct PlayerComponent {}
+
+pub struct ControllerComponent {
+    pub speed: f32,
+    pub sensitivity: f32,
+    pub is_forward_pressed: bool,
+    pub is_backward_pressed: bool,
+    pub is_left_pressed: bool,
+    pub is_right_pressed: bool,
+
+    
+}
+impl ControllerComponent{
+    pub fn new(speed:f32,sensitivity:f32 ) -> Self {
+        Self {
+             speed: speed,
+             sensitivity: sensitivity,
+             is_forward_pressed: false,
+             is_backward_pressed: false,
+             is_left_pressed: false,
+             is_right_pressed: false
+        }
+
+    }
+}
    
 

@@ -1,5 +1,6 @@
 use std::time::Duration;
 use cgmath::Vector3;
+use crate::ecs::components::ControllerComponent;
 use crate::utils::colors::{RED,BLUE};
 use crate::ecs::systems::relation_system;
 
@@ -35,6 +36,10 @@ pub fn init_world(world: &mut World) {
     world.add_component_to_entity(
         player,
         PlayerComponent{});
+    world.add_component_to_entity(
+        player,
+        ControllerComponent::new(0.05, 0.1)
+    );
 
     // Camera
     let camera_position = (0.0, 2.0, 4.0);
@@ -64,7 +69,7 @@ pub fn init_world(world: &mut World) {
     world.add_component_to_entity(camera, 
         TransformComponent::from(Vector3::new(camera_position.0, camera_position.1, camera_position.2))
     );
-    relation_system::add_child_component(world, camera, player);
+    relation_system::add_child_component(world, player, camera);
     
 
     //  Obstacles

@@ -28,23 +28,25 @@ pub fn update_camera(world: &World) {
                 let forward = Vector3::new(x as f32, y as f32, z as f32);
                 let forward_norm = forward.normalize();
 
-                if controller.is_forward_pressed {
-                    camera.eye += controller.speed * forward_norm;
-                }
-                if controller.is_backward_pressed {
-                    camera.eye -= controller.speed * forward_norm;
-                }
-                if controller.is_right_pressed {
-                    camera.eye += controller.speed * forward_norm.cross(camera.up);
-                }
-                if controller.is_left_pressed {
-                    camera.eye -= controller.speed * forward_norm.cross(camera.up);
-                }
-                camera.eye.y = 2.0;
+                // if controller.is_forward_pressed {
+                //     camera.eye += controller.speed * forward_norm;
+                // }
+                // if controller.is_backward_pressed {
+                //     camera.eye -= controller.speed * forward_norm;
+                // }
+                // if controller.is_right_pressed {
+                //     camera.eye += controller.speed * forward_norm.cross(camera.up);
+                // }
+                // if controller.is_left_pressed {
+                //     camera.eye -= controller.speed * forward_norm.cross(camera.up);
+                //}
+                camera.eye.x =  transform.position.x;
+                camera.eye.y =  transform.position.y + 2. ;
+                camera.eye.z =  transform.position.z;
                 camera.target = camera.eye + forward;
 
                 // Update transform
-                transform.set_position(camera.eye.x, camera.eye.y, camera.eye.z);
+                //transform.set_position(camera.eye.x, camera.eye.y, camera.eye.z);
             }
         }
     }
@@ -56,18 +58,19 @@ pub fn process_input(world: &World) {
         for controller in controller_vec.iter_mut() {
             if let Some(controller) = controller {
                 // Keys
-                controller.is_forward_pressed =
-                    *world.resources.input.keys.get(&VirtualKeyCode::W).unwrap_or(&false)
-                        || *world.resources.input.keys.get(&VirtualKeyCode::Up).unwrap_or(&false);
-                controller.is_left_pressed =
-                    *world.resources.input.keys.get(&VirtualKeyCode::A).unwrap_or(&false)
-                        || *world.resources.input.keys.get(&VirtualKeyCode::Left).unwrap_or(&false);
-                controller.is_backward_pressed =
-                    *world.resources.input.keys.get(&VirtualKeyCode::S).unwrap_or(&false)
-                        || *world.resources.input.keys.get(&VirtualKeyCode::Down).unwrap_or(&false);
-                controller.is_right_pressed =
-                    *world.resources.input.keys.get(&VirtualKeyCode::D).unwrap_or(&false)
-                        || *world.resources.input.keys.get(&VirtualKeyCode::Right).unwrap_or(&false);
+                // Das wird vom Controll component geregelt
+                // controller.is_forward_pressed =
+                //     *world.resources.input.keys.get(&VirtualKeyCode::W).unwrap_or(&false)
+                //         || *world.resources.input.keys.get(&VirtualKeyCode::Up).unwrap_or(&false);
+                // controller.is_left_pressed =
+                //     *world.resources.input.keys.get(&VirtualKeyCode::A).unwrap_or(&false)
+                //         || *world.resources.input.keys.get(&VirtualKeyCode::Left).unwrap_or(&false);
+                // controller.is_backward_pressed =
+                //     *world.resources.input.keys.get(&VirtualKeyCode::S).unwrap_or(&false)
+                //         || *world.resources.input.keys.get(&VirtualKeyCode::Down).unwrap_or(&false);
+                // controller.is_right_pressed =
+                //     *world.resources.input.keys.get(&VirtualKeyCode::D).unwrap_or(&false)
+                //         || *world.resources.input.keys.get(&VirtualKeyCode::Right).unwrap_or(&false);
 
                 // Mouse
                 let position = world.resources.input.cursor.position;

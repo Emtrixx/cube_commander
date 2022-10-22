@@ -100,6 +100,9 @@ async fn game_loop(mut game_state: GameState) {
                 let dt = now - last_render_time;
                 last_render_time = now;
 
+                player_system::process_input(&game_state.instance);
+                player_system::update_player(&game_state.instance);
+
                 obstacle_system::update_obstacles(&game_state.instance, dt);
                 relation_system::update_children_transform(&game_state.instance);
                 camera_system::process_input(&game_state.instance);
@@ -107,7 +110,8 @@ async fn game_loop(mut game_state: GameState) {
                 camera_system::update_view_projection_matrix(&game_state.instance, state.config.width as f32 / state.config.height as f32);
                 render_system::set_camera_uniform(&game_state.instance, &mut state);
                 render_system::update_state_mesh_buffer(&game_state.instance, &mut state);
-                player_system::update_player(&game_state.instance);
+
+                
                 
                 match state.render() {
                     Ok(_) => {}
