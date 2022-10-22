@@ -22,16 +22,16 @@ pub fn init_world(world: &mut World) {
     world.add_component_to_entity(
         cube, 
         RenderComponent {
-         mesh: Shape::new_default_cube("cube".to_string(), GREEN)
+         mesh: Shape::new_default_cube(GREEN)
         }
     
     );
     world.add_component_to_entity(
         cube, 
         TransformComponent {
-            position: [0.0, 0.1, 0.0],
-            rotation: [0.0, 0.0, 0.0],
-            scale: [1.0, 1.0, 1.0],
+            position: [0.0, 0.1, 0.0].into(),
+            rotation: [0.0, 0.0, 0.0].into(),
+            scale: [1.0, 1.0, 1.0].into(),
         }
     );
     world.add_component_to_entity(
@@ -78,15 +78,15 @@ pub fn init_world(world: &mut World) {
         world.add_component_to_entity(
             obstacles[i], 
             RenderComponent {
-             mesh: Shape::new_default_cube("cube".to_string(), [0.0, 1.0, 0.0])
+             mesh: Shape::new_default_cube([0.0, 1.0, 0.0])
             },
         );
         world.add_component_to_entity(
             obstacles[i], 
             TransformComponent {
-                position: [0.0, 0.0, -3. * (i + 1) as f32],
-                rotation: [0.0, 0.0, 0.0],
-                scale: [1.0, 1.0, 1.0],
+                position: [0.0, 0.0, -3. * (i + 1) as f32].into(),
+                rotation: [0.0, 0.0, 0.0].into(),
+                scale: [1.0, 1.0, 1.0].into(),
             }
         );
     }
