@@ -42,8 +42,8 @@ pub fn update_children_transform(world: &World) {
                 parent_info.push((parent_transform_clone, child_ids));
             }
         }
-        println!("Parrents:{:?}", parent_vec);
-        println!("Childeren{:?}",child_vec);
+        //println!("Parrents:{:?}", parent_vec);
+        //println!("Childeren{:?}",child_vec);
     
 
         for parent in parent_info.iter() {

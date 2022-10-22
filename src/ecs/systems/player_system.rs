@@ -1,4 +1,4 @@
-
+use rapier3d::prelude::*;
 
 use winit::event::VirtualKeyCode;
 
@@ -8,7 +8,7 @@ use crate::ecs::{
 };
 
 
-pub fn update_player(world: &World) {
+pub fn update_player(world: &World, y_positon: f32) {
     let mut rng = rand::thread_rng();
     if let Some(mut transform_components) = world.borrow_component_vec_mut::<TransformComponent>() {
         if let Some(mut player_components) = world.borrow_component_vec_mut::<PlayerComponent>() {
@@ -30,6 +30,7 @@ pub fn update_player(world: &World) {
                 // if controller.is_backward_pressed {
                 //     transform.position.x -= controller.speed;
                 // }
+                transform.position.y = y_positon;
                 if controller.is_right_pressed {
                     transform.position.x += controller.speed;
                     
