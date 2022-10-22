@@ -156,10 +156,7 @@ impl ChildComponent {
         self.transform.position
     }
 }
-<<<<<<< HEAD
 // Player Component
-pub struct PlayerComponent {
+pub struct PlayerComponent {}
+   
 
-}
-=======
->>>>>>> main

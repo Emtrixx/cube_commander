@@ -1,8 +1,11 @@
 use std::time::Duration;
-use image::math::Vector3;
+use cgmath::Vector3;
+use crate::utils::colors::{RED,BLUE};
+use crate::ecs::systems::relation_system;
+
 
 use crate::{
-    ecs::{components::{RenderComponent, TransformComponent, ObstacleComponent, CameraComponent, CameraUniformComponent, CameraControllerComponent}, World},
+    ecs::{components::{RenderComponent, TransformComponent, ObstacleComponent, CameraComponent, CameraUniformComponent, CameraControllerComponent, PlayerComponent}, World},
     game::shapes::Shape,
 };
 
@@ -29,6 +32,10 @@ pub fn init_world(world: &mut World) {
          mesh: Shape::new_default_cube(RED)
         }
     );
+    world.add_component_to_entity(
+        player,
+        PlayerComponent{});
+
     // Camera
     let camera_position = (0.0, 2.0, 4.0);
     let camera = world.new_entity();
@@ -58,6 +65,7 @@ pub fn init_world(world: &mut World) {
         TransformComponent::from(Vector3::new(camera_position.0, camera_position.1, camera_position.2))
     );
     relation_system::add_child_component(world, camera, player);
+    
 
     //  Obstacles
     let mut obstacles: Vec<usize> = vec![];
